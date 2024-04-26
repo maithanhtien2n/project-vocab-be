@@ -56,52 +56,5 @@ module.exports = (app) => {
   };
 
   // Register routes for different folders
-  onApiOpenFile("/avatar");
-  onApiOpenFile("/image");
-  onApiOpenFile("/notification");
-  onApiOpenFile("/audio");
-  onApiOpenFile("/bot-versatile");
-  onApiOpenFile("/video");
-
-  // Api lấy danh sách name file audio
-  onRoute({
-    route: "get-all-file",
-    role: "ADMIN",
-    methods: "get",
-    handler: async (req, res) => {
-      try {
-        // Các hàm xử lý request
-        const request = checkNullRequest(req.query, ["folderName"]);
-
-        // Hàm xử lý logic và trả ra kết quả
-        const result = await commonService.getAllFile(request);
-
-        // Hàm trả về response cho người dùng
-        onResponse(res, result).ok({ sttValue: "Lấy dữ liệu thành công!" });
-      } catch (error) {
-        onResponse(res, null).badRequest(error);
-      }
-    },
-  });
-
-  // Api lấy danh sách name file audio
-  onRoute({
-    route: "delete-all-file",
-    role: "ADMIN",
-    methods: "delete",
-    handler: async (req, res) => {
-      try {
-        // Các hàm xử lý request
-        const request = checkNullRequest(req.query, ["folderName"]);
-
-        // Hàm xử lý logic và trả ra kết quả
-        const result = await commonService.deleteAllFile(request);
-
-        // Hàm trả về response cho người dùng
-        onResponse(res, result).ok({ sttValue: "Xóa dữ liệu thành công!" });
-      } catch (error) {
-        onResponse(res, null).badRequest(error);
-      }
-    },
-  });
+  onApiOpenFile("/images");
 };

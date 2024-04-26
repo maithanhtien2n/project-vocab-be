@@ -59,7 +59,9 @@ module.exports = {
 
     let data = {};
 
-    for (const item of Object.keys(cloneUser._doc)) {
+    for (const item of Object.keys(
+      cloneUser?._doc ? cloneUser?._doc : cloneUser
+    )) {
       if (!fieldsToRemove.includes(item)) {
         data[item] = originalObject[item];
       }

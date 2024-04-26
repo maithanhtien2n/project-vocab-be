@@ -16,7 +16,7 @@ app.use(bodyParser.json({ limit: "500MB" })); // Tăng giới hạn kích thư�
 // Định tuyến các API endpoint
 require("./src/app/Controllers/CommonController")(app);
 require("./src/app/Controllers/AuthController")(app);
-require("./src/app/Controllers/UserController")(app);
+require("./src/app/Controllers/ClassRoomController")(app);
 
 const port = process.env.PORT;
 server.listen(port, () => {

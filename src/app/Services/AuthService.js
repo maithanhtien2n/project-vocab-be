@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const { throwError, cloneObjectWithoutFields } = require("../Utils/index");
 
 const { Account } = require("../Models/Account");
-const { User } = require("../Models/User");
 
 module.exports = {
   register: async ({ fullName, dayOfBirth, email, password }) => {
