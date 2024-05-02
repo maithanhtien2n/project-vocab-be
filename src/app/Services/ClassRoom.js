@@ -86,7 +86,7 @@ module.exports = {
           );
         }
 
-        const isWasInTheRoom = await ClassRoom.find({
+        const isWasInTheRoom = await ClassRoom.findOne({
           memberInRoom: { $in: [accountId] },
         });
         if (isWasInTheRoom) {
