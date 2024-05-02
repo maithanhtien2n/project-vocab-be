@@ -85,6 +85,18 @@ module.exports = {
             "Mật khẩu vào phòng không chính xác!"
           );
         }
+
+        const isWasInTheRoom = await ClassRoom.find({
+          memberInRoom: { $in: [accountId] },
+        });
+        if (isWasInTheRoom) {
+          throwError("IS_WAS_IN_THE_ROOM", "Bạn đã có mặt ở phòng này!");
+        }
+
+        if (+value.numberOfUsers >= +value.memberInRoom.length) {
+          throwError("ROOM_IS_FULL", "Phòng đã đạt số lượng cho phép!");
+        }
+
         const result = await ClassRoom.updateOne(
           {
             _id: value?._id,
