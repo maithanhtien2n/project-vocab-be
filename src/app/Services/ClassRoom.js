@@ -15,7 +15,10 @@ module.exports = {
       }
 
       if (type === "joinedClassroom") {
-        result = await ClassRoom.find({ accountId: { $ne: accountId } });
+        result = await ClassRoom.find({
+          accountId: { $ne: accountId },
+          memberInRoom: { $in: [accountId] },
+        });
       }
 
       return result;
