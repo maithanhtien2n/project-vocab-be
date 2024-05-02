@@ -137,4 +137,24 @@ module.exports = (app) => {
       }
     },
   });
+
+  // Api check xem phòng có password không
+  onRoute({
+    route: "is-password",
+    role: "USER",
+    methods: "put",
+    handler: async (req, res) => {
+      try {
+        const { classRoomId } = req.query;
+
+        // Hàm xử lý logic và trả ra kết quả
+        const result = await classRoom.checkRoomPassword({ classRoomId });
+
+        // Hàm trả về response cho người dùng
+        onResponse(res, result).ok({ sttValue: `Kiểm tra thành công!` });
+      } catch (error) {
+        onResponse(res, null).badRequest(error);
+      }
+    },
+  });
 };

@@ -16,7 +16,6 @@ module.exports = {
 
       if (type === "joinedClassroom") {
         result = await ClassRoom.find({
-          accountId: { $ne: accountId },
           memberInRoom: { $in: [accountId] },
         });
       }
@@ -95,6 +94,15 @@ module.exports = {
         );
         return result;
       });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  checkRoomPassword: async ({ classRoomId }) => {
+    try {
+      const result = await ClassRoom.findById(classRoomId);
+      return { isPassword: result?.password ? true : false };
     } catch (error) {
       throw error;
     }
