@@ -52,13 +52,15 @@ module.exports = (app) => {
     handler: async (req, res) => {
       try {
         // Các hàm xử lý request
-        const request = checkNullRequest(req.body, [
+        let request = checkNullRequest(req.body, [
           "accountId",
           "roomName",
           "description",
           "author",
-          "numberOfUsers",
         ]);
+        if (!request.numberOfUsers) {
+          request.numberOfUsers = 1000;
+        }
 
         // Hàm xử lý logic và trả ra kết quả
         const result = await classRoom.saveClassRoom(req.query.classRoomId, {

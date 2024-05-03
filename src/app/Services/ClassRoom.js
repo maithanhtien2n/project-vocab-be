@@ -87,13 +87,15 @@ module.exports = {
         }
 
         const isWasInTheRoom = await ClassRoom.findOne({
+          classRoomId,
           memberInRoom: { $in: [accountId] },
         });
+
         if (isWasInTheRoom) {
           throwError("IS_WAS_IN_THE_ROOM", "Bạn đã có mặt ở phòng này!");
         }
 
-        if (+value.numberOfUsers >= +value.memberInRoom.length) {
+        if (+value.numberOfUsers === +value.memberInRoom.length) {
           throwError("ROOM_IS_FULL", "Phòng đã đạt số lượng cho phép!");
         }
 

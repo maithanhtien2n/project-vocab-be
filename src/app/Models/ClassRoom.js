@@ -14,7 +14,7 @@ const ClassRoom = mongoose.model(
       roomName: { type: String, required: true },
       description: { type: String, required: true },
       author: { type: String, required: true },
-      numberOfUsers: { type: Number, required: true },
+      numberOfUsers: { type: Number, required: false, default: 1000 },
       password: { type: String, required: false, default: null },
       memberInRoom: {
         type: [
