@@ -8,7 +8,7 @@ const Account = mongoose.model(
       avatar: { type: String, required: false, default: null },
       fullName: { type: String, required: true },
       phoneNumber: { type: Number, required: false, default: null },
-      gender: { type: Boolean, required: false, default: null },
+      gender: { type: String, required: false, default: null },
       dayOfBirth: { type: String, required: true },
       address: { type: String, required: false, default: null },
       email: { type: String, required: true },

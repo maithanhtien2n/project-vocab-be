@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 module.exports = (app) => {
   const {
     onResponse,
@@ -55,6 +57,43 @@ module.exports = (app) => {
 
       // Hàm trả về response cho người dùng
       onResponse(res, result).ok({ sttValue: "Đăng nhập thành công!" });
+    } catch (error) {
+      onResponse(res, null).badRequest(error);
+    }
+  });
+
+  // API Lấy thông tin người dùng
+  onRoute("get", "user-info/:id", async (req, res) => {
+    try {
+      // Hàm xử lý logic và trả ra kết quả
+      const result = await authService.getUserInfo(req.params.id);
+
+      // Hàm trả về response cho người dùng
+      onResponse(res, result).ok({ sttValue: "Lấy thông tin thành công!" });
+    } catch (error) {
+      onResponse(res, null).badRequest(error);
+    }
+  });
+
+  // API lưu thông tin người dùng
+  onRoute("put", "save-user-info", async (req, res) => {
+    try {
+      // Các hàm xử lý request
+      const request = checkNullRequest(req.body, [
+        "accountId",
+        "fullName",
+        "phoneNumber",
+        "dayOfBirth",
+      ]);
+
+      // Hàm xử lý logic và trả ra kết quả
+      const result = await authService.saveUserInfo({
+        ...request,
+        host: process.env.HOST_BE,
+      });
+
+      // Hàm trả về response cho người dùng
+      onResponse(res, result).ok({ sttValue: "Lấy thông tin thành công!" });
     } catch (error) {
       onResponse(res, null).badRequest(error);
     }
