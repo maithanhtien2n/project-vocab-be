@@ -22,7 +22,7 @@ module.exports = (app) => {
   };
 
   // Service import
-  const classRoom = require("../Services/ClassRoom");
+  const classRoomService = require("../Services/ClassRoom");
 
   // API lấy danh sách phòng
   onRoute({
@@ -31,10 +31,11 @@ module.exports = (app) => {
     methods: "get",
     handler: async (req, res) => {
       try {
-        const { accountId, type } = req.query;
-
         // Hàm xử lý logic và trả ra kết quả
-        const result = await classRoom.getAllClassRoom({ accountId, type });
+        const result = await classRoomService.getAllClassRoom({
+          accountId: req.data._id,
+          type: req.query.type,
+        });
 
         // Hàm trả về response cho người dùng
         onResponse(res, result).ok({ sttValue: "Lấy dữ liệu thành công!" });
@@ -53,7 +54,6 @@ module.exports = (app) => {
       try {
         // Các hàm xử lý request
         let request = checkNullRequest(req.body, [
-          "accountId",
           "roomName",
           "description",
           "author",
@@ -63,10 +63,14 @@ module.exports = (app) => {
         }
 
         // Hàm xử lý logic và trả ra kết quả
-        const result = await classRoom.saveClassRoom(req.query.classRoomId, {
-          ...cloneObjectWithoutFields(request, ["_id"]),
-          host: process.env.HOST_BE,
-        });
+        const result = await classRoomService.saveClassRoom(
+          req.query.classRoomId,
+          {
+            accountId: req.data._id,
+            ...cloneObjectWithoutFields(request, ["_id"]),
+            host: process.env.HOST_BE,
+          }
+        );
 
         // Hàm trả về response cho người dùng
         onResponse(res, result).ok({ sttValue: "Lưu dữ liệu thành công!" });
@@ -76,7 +80,7 @@ module.exports = (app) => {
     },
   });
 
-  // API lưu phòng học
+  // API lấy chi tiết phòng học
   onRoute({
     route: ":id",
     role: "USER",
@@ -84,7 +88,7 @@ module.exports = (app) => {
     handler: async (req, res) => {
       try {
         // Hàm xử lý logic và trả ra kết quả
-        const result = await classRoom.getByIdClassRoom(req.params.id);
+        const result = await classRoomService.getByIdClassRoom(req.params.id);
 
         // Hàm trả về response cho người dùng
         onResponse(res, result).ok({ sttValue: "Lấy liệu thành công!" });
@@ -102,7 +106,7 @@ module.exports = (app) => {
     handler: async (req, res) => {
       try {
         // Hàm xử lý logic và trả ra kết quả
-        const result = await classRoom.deleteClassRoom(req.params.id);
+        const result = await classRoomService.deleteClassRoom(req.params.id);
 
         // Hàm trả về response cho người dùng
         onResponse(res, result).ok({
@@ -121,11 +125,11 @@ module.exports = (app) => {
     methods: "put",
     handler: async (req, res) => {
       try {
-        const { accountId, classRoomId, password } = req.query;
+        const { classRoomId, password } = req.query;
 
         // Hàm xử lý logic và trả ra kết quả
-        const result = await classRoom.joinClassRoom({
-          accountId,
+        const result = await classRoomService.joinClassRoom({
+          accountId: req.data._id,
           classRoomId,
           password,
         });
@@ -150,7 +154,37 @@ module.exports = (app) => {
         const { classRoomId } = req.query;
 
         // Hàm xử lý logic và trả ra kết quả
-        const result = await classRoom.checkRoomPassword({ classRoomId });
+        const result = await classRoomService.checkRoomPassword({
+          classRoomId,
+        });
+
+        // Hàm trả về response cho người dùng
+        onResponse(res, result).ok({ sttValue: `Kiểm tra thành công!` });
+      } catch (error) {
+        onResponse(res, null).badRequest(error);
+      }
+    },
+  });
+
+  // Api set quyền cho thành viên trong phòng
+  onRoute({
+    route: "set-role",
+    role: "USER",
+    methods: "put",
+    handler: async (req, res) => {
+      try {
+        // Các hàm xử lý request
+        const request = checkNullRequest(req.body, [
+          "classRoomId",
+          "memberInRoomId",
+          "isCensor",
+        ]);
+
+        // Hàm xử lý logic và trả ra kết quả
+        const result = await classRoomService.setRoleToClassRoom({
+          accountId: req.data._id,
+          ...request,
+        });
 
         // Hàm trả về response cho người dùng
         onResponse(res, result).ok({ sttValue: `Kiểm tra thành công!` });

@@ -11,13 +11,23 @@ module.exports = {
       let result = [];
 
       if (type === "myClassRoom") {
-        result = await ClassRoom.find({ accountId });
+        try {
+          const myClassRoom = await ClassRoom.find({ accountId });
+          result = myClassRoom;
+        } catch (error) {
+          result = [];
+        }
       }
 
       if (type === "joinedClassroom") {
-        result = await ClassRoom.find({
-          memberInRoom: { $in: [accountId] },
-        });
+        try {
+          const joinedClassroom = await ClassRoom.find({
+            memberInRoom: { $in: [accountId] },
+          });
+          result = joinedClassroom;
+        } catch (error) {
+          result = [];
+        }
       }
 
       return result;
@@ -45,6 +55,12 @@ module.exports = {
         data[fieldImage]?.base64?.includes("http")
       ) {
         infoData.image = null;
+      }
+
+      if (classRoomId === "null") {
+        infoData.memberInRoom = [
+          { accountId: data.accountId, role: "ROOM_MASTER" },
+        ];
       }
 
       const result = await uploadFile(
@@ -88,7 +104,7 @@ module.exports = {
 
         const isWasInTheRoom = await ClassRoom.findOne({
           classRoomId,
-          memberInRoom: { $in: [accountId] },
+          memberInRoom: { $elemMatch: { accountId } },
         });
 
         if (isWasInTheRoom) {
@@ -101,10 +117,10 @@ module.exports = {
 
         const result = await ClassRoom.updateOne(
           {
-            _id: value?._id,
-            memberInRoom: { $not: { $elemMatch: { $eq: accountId } } },
+            _id: classRoomId,
+            memberInRoom: { $not: { $elemMatch: { accountId: accountId } } },
           },
-          { $addToSet: { memberInRoom: accountId } }
+          { $addToSet: { memberInRoom: { accountId: accountId } } }
         );
         return result;
       });
@@ -115,8 +131,43 @@ module.exports = {
 
   checkRoomPassword: async ({ classRoomId }) => {
     try {
-      const result = await ClassRoom.findById(classRoomId);
-      return { isPassword: result?.password ? true : false };
+      return getById(classRoomId, ClassRoom, "phòng", async (value) => {
+        return { isPassword: value?.password ? true : false };
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  setRoleToClassRoom: async ({
+    accountId,
+    classRoomId,
+    memberInRoomId,
+    isCensor,
+  }) => {
+    try {
+      return getById(classRoomId, ClassRoom, "phòng", async (value) => {
+        console.log(accountId, `${value.accountId}`);
+        if (`${value.accountId}` !== accountId) {
+          throwError(
+            "ROLE_INVALID",
+            "Bạn không phải là chủ phòng, bạn không thể thực hiện chức năng này!"
+          );
+        }
+
+        if (memberInRoomId === accountId) {
+          throwError(
+            "MEMBER_IN_ROM_INVALID",
+            "Bạn không thể tự set quyền cho mình!"
+          );
+        }
+
+        const resultUpdate = await ClassRoom.updateOne(
+          { _id: classRoomId, "memberInRoom.accountId": memberInRoomId },
+          { $set: { "memberInRoom.$.role": isCensor ? "CENSOR" : "MEMBER" } }
+        );
+        return resultUpdate;
+      });
     } catch (error) {
       throw error;
     }

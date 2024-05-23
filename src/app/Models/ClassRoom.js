@@ -1,6 +1,14 @@
 const mongoose = require("../../Database/ConnectDatabase");
 const Schema = mongoose.Schema;
 
+const MemberInRoom = new Schema({
+  accountId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Account",
+    required: true,
+  },
+  role: { type: String, required: true, default: "MEMBER" },
+});
 const ClassRoom = mongoose.model(
   "ClassRooms",
   new Schema(
@@ -16,22 +24,7 @@ const ClassRoom = mongoose.model(
       author: { type: String, required: true },
       numberOfUsers: { type: Number, required: false, default: 1000 },
       password: { type: String, required: false, default: null },
-      memberInRoom: {
-        type: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Account",
-          },
-        ],
-        required: false,
-        validate: {
-          validator: function (v) {
-            return v.every((id) => mongoose.Types.ObjectId.isValid(id));
-          },
-          message: "memberInRoom must contain only valid AccountIds",
-        },
-        default: [],
-      },
+      memberInRoom: { type: [MemberInRoom], required: true },
     },
     { timestamps: true }
   )

@@ -4,7 +4,7 @@ const onRouteCustom = ({
   app,
   controllerName,
   methods,
-  route,
+  route = "",
   handler,
   role = "NO_AUTH",
   isFee,
