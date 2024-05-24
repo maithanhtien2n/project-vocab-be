@@ -193,4 +193,25 @@ module.exports = (app) => {
       }
     },
   });
+
+  // Api lấy danh sách thành viên trong phòng
+  onRoute({
+    route: ":id/get-member",
+    role: "USER",
+    methods: "get",
+    handler: async (req, res) => {
+      try {
+        // Hàm xử lý logic và trả ra kết quả
+        const result = await classRoomService.getAllMemberOfClassRoom({
+          accountId: req.data._id,
+          classRoomId: req.params.id,
+        });
+
+        // Hàm trả về response cho người dùng
+        onResponse(res, result).ok({ sttValue: `Lấy dữ liệu thành công!` });
+      } catch (error) {
+        onResponse(res, null).badRequest(error);
+      }
+    },
+  });
 };

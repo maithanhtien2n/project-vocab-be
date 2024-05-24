@@ -4,6 +4,7 @@ const { cloneObjectWithoutFields, throwError } = require("../Utils/index");
 const { uploadFile, getById } = require("./CommonService");
 
 const { ClassRoom } = require("../Models/ClassRoom");
+const { Account } = require("../Models/Account");
 
 module.exports = {
   getAllClassRoom: async ({ accountId, type }) => {
@@ -169,6 +170,55 @@ module.exports = {
           { $set: { "memberInRoom.$.role": isCensor ? "CENSOR" : "MEMBER" } }
         );
         return resultUpdate;
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getAllMemberOfClassRoom: async ({ accountId, classRoomId }) => {
+    try {
+      return getById(classRoomId, ClassRoom, "phòng", async (value) => {
+        const isWasInTheRoom = await ClassRoom.findOne({
+          _id: value._id,
+          memberInRoom: { $elemMatch: { accountId: accountId } },
+        });
+        if (!isWasInTheRoom) {
+          throwError("NOT_HAVE_ACCESS", "Bạn chưa có mặt ở phòng này!");
+        }
+
+        const memberInRoomIds = isWasInTheRoom.memberInRoom.map(
+          (item) => item.accountId
+        );
+
+        const users = await Account.find({
+          _id: { $in: memberInRoomIds },
+        }).select("_id avatar fullName");
+
+        let members = users.map((user) => {
+          const memberInRoom = isWasInTheRoom.memberInRoom.find(
+            (i) => i.accountId.toString() === user._id.toString()
+          );
+          if (memberInRoom) {
+            return {
+              ...user.toObject(),
+              role: memberInRoom.role,
+            };
+          } else {
+            return user.toObject();
+          }
+        });
+
+        members = members.sort((a, b) => {
+          const roleOrder = { ROOM_MASTER: 1, CENSOR: 2, MEMBER: 3 };
+
+          const roleA = roleOrder[a.role] || 9999;
+          const roleB = roleOrder[b.role] || 9999;
+
+          return roleA - roleB;
+        });
+
+        return members;
       });
     } catch (error) {
       throw error;
