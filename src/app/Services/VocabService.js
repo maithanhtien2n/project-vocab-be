@@ -86,7 +86,10 @@ module.exports = {
         );
       }
 
-      const result = await Vocab.updateOne({ _id: id }, { ...request });
+      const result = await Vocab.updateOne(
+        { _id: id },
+        { ...cloneObjectWithoutFields(request, ["_id"]) }
+      );
 
       return result;
     } catch (error) {
