@@ -12,11 +12,16 @@ const Vocab = mongoose.model(
   "Vocab",
   new Schema(
     {
+      classRoomId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ClassRoom",
+        required: true,
+      },
       title: { type: String, required: true },
       translateTitle: { type: String, required: true },
       isTranslate: { type: Boolean, required: true, default: true },
       isExample: { type: Boolean, required: true, default: true },
-      vocabItem: { type: [VocabItem], required: true, default: [] },
+      vocabItems: { type: [VocabItem], required: true, default: [] },
     },
     { timestamps: true }
   )

@@ -22,8 +22,10 @@ module.exports = {
       if (type === "joinedClassroom") {
         try {
           const joinedClassroom = await ClassRoom.find({
-            memberInRoom: { $in: [accountId] },
+            accountId: { $ne: accountId },
+            memberInRoom: { $elemMatch: { accountId } },
           });
+
           result = joinedClassroom;
         } catch (error) {
           result = [];
@@ -92,7 +94,7 @@ module.exports = {
       return getById(classRoomId, ClassRoom, "phòng", async (value) => {
         const classRoom = await ClassRoom.findOne({
           _id: value?._id,
-          memberInRoom: { $in: [accountId] },
+          memberInRoom: { $in: [new Object(accountId)] },
         });
 
         if (!classRoom && value.password && value.password !== password) {
@@ -103,7 +105,7 @@ module.exports = {
         }
 
         const isWasInTheRoom = await ClassRoom.findOne({
-          classRoomId,
+          _id: classRoomId,
           memberInRoom: { $elemMatch: { accountId } },
         });
 

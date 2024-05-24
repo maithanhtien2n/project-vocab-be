@@ -22,7 +22,7 @@ module.exports = (app) => {
   };
 
   // Service import
-  const classRoomService = require("../Services/ClassRoom");
+  const classRoomService = require("../Services/ClassRoomService");
 
   // API lấy danh sách phòng
   onRoute({
