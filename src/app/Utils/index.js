@@ -26,7 +26,7 @@ module.exports = {
     let keys = [];
 
     for (const key of arrValue) {
-      if (!data[key]) {
+      if ([undefined, null, ""].includes(data[key])) {
         keys.push(key);
       }
     }
