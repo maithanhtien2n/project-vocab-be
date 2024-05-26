@@ -203,6 +203,7 @@ module.exports = {
             return {
               ...user.toObject(),
               role: memberInRoom.role,
+              isCensor: ["CENSOR", "ROOM_MASTER"].includes(memberInRoom.role),
             };
           } else {
             return user.toObject();

@@ -5,7 +5,6 @@ const { uploadFile, getById } = require("./CommonService");
 
 const { Vocab } = require("../Models/Vocab");
 const { ClassRoom } = require("../Models/ClassRoom");
-const { default: mongoose } = require("mongoose");
 
 module.exports = {
   getAllVocab: async ({ accountId, classRoomId }) => {
