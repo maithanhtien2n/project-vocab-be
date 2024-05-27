@@ -150,7 +150,6 @@ module.exports = {
   }) => {
     try {
       return getById(classRoomId, ClassRoom, "phòng", async (value) => {
-        console.log(accountId, `${value.accountId}`);
         if (`${value.accountId}` !== accountId) {
           throwError(
             "ROLE_INVALID",
@@ -220,6 +219,61 @@ module.exports = {
         });
 
         return members;
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  removedMemberOfClassRoom: async ({
+    accountId,
+    classRoomId,
+    typeRemove,
+    memberInRoomId,
+  }) => {
+    try {
+      const checkTypeRemove = ["LEAVE_THE_ROOM", "REMOVE_MEMBER"].includes(
+        typeRemove
+      );
+      if (!checkTypeRemove) {
+        throwError(
+          "TYPE_REMOVE_INVALID",
+          "typeRemove truyền lên phải là: LEAVE_THE_ROOM hoặc REMOVE_MEMBER"
+        );
+      }
+
+      return getById(classRoomId, ClassRoom, "phòng", async (value) => {
+        const isWasInTheRoom = await ClassRoom.findOne({
+          _id: value._id,
+          memberInRoom: { $elemMatch: { accountId: accountId } },
+        });
+        if (!isWasInTheRoom) {
+          throwError("NOT_HAVE_ACCESS", "Bạn chưa có mặt ở phòng này!");
+        }
+
+        if (
+          typeRemove === "LEAVE_THE_ROOM" &&
+          `${value.accountId}` === accountId
+        ) {
+          throwError("ROLE_INVALID", "Chủ phòng, không thể rời khỏi phòng!");
+        }
+
+        if (
+          typeRemove === "REMOVE_MEMBER" &&
+          `${value.accountId}` !== accountId
+        ) {
+          throwError(
+            "ROLE_INVALID",
+            "Bạn không phải là chủ phòng, bạn không thể thực hiện chức năng này!"
+          );
+        }
+
+        const result = await ClassRoom.updateOne(
+          { _id: value._id },
+          { $pull: { memberInRoom: { _id: memberInRoomId } } }
+        );
+
+        return result;
       });
     } catch (error) {
       throw error;

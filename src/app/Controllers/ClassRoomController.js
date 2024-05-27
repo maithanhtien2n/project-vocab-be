@@ -214,4 +214,33 @@ module.exports = (app) => {
       }
     },
   });
+
+  // Api xóa thành viên ra khỏi phòng
+  onRoute({
+    route: ":id/remove-member",
+    role: "USER",
+    methods: "put",
+    handler: async (req, res) => {
+      try {
+        // Các hàm xử lý request
+        const request = checkNullRequest(req.query, [
+          "typeRemove",
+          "memberInRoomId",
+        ]);
+
+        // Hàm xử lý logic và trả ra kết quả
+        const result = await classRoomService.removedMemberOfClassRoom({
+          accountId: req.data._id,
+          classRoomId: req.params.id,
+          typeRemove: request.typeRemove,
+          memberInRoomId: request.memberInRoomId,
+        });
+
+        // Hàm trả về response cho người dùng
+        onResponse(res, result).ok({ sttValue: `Lấy dữ liệu thành công!` });
+      } catch (error) {
+        onResponse(res, null).badRequest(error);
+      }
+    },
+  });
 };
