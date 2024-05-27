@@ -225,7 +225,7 @@ module.exports = {
     }
   },
 
-  removedMemberOfClassRoom: async ({
+  removeMemberOfClassRoom: async ({
     accountId,
     classRoomId,
     typeRemove,

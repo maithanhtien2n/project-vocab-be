@@ -229,7 +229,7 @@ module.exports = (app) => {
         ]);
 
         // Hàm xử lý logic và trả ra kết quả
-        const result = await classRoomService.removedMemberOfClassRoom({
+        const result = await classRoomService.removeMemberOfClassRoom({
           accountId: req.data._id,
           classRoomId: req.params.id,
           typeRemove: request.typeRemove,
