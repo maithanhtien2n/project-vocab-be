@@ -201,6 +201,8 @@ module.exports = {
           if (memberInRoom) {
             return {
               ...user.toObject(),
+              _id: memberInRoom._id,
+              accountId: user?._id,
               role: memberInRoom.role,
               isCensor: ["CENSOR", "ROOM_MASTER"].includes(memberInRoom.role),
             };
